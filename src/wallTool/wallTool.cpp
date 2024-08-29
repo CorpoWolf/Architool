@@ -1,5 +1,4 @@
 #include <maya/MGlobal.h>
-#include <maya/MPxCommand.h>
 #include <maya/MFnMesh.h>
 #include <maya/MFloatPointArray.h>
 #include <maya/MIntArray.h>
@@ -11,13 +10,11 @@
 #include <maya/MFnSet.h>
 #include <maya/MItSelectionList.h>
 #include <maya/MFnDependencyNode.h>
+#include <maya/MPxCommand.h>
+#include <maya/MPxNode.h>
+#include <maya/MFnNumericAttribute.h>
 
-class WallCreateCmd : public MPxCommand {
-public:
-	WallCreateCmd() {}
-	virtual MStatus doIt(const MArgList& args);
-	static void* creator() { return new WallCreateCmd(); }
-};
+#include "./wallTool.h"
 
 MStatus WallCreateCmd::doIt(const MArgList& args) {
 	MStatus status;
@@ -54,7 +51,7 @@ MStatus WallCreateCmd::doIt(const MArgList& args) {
 	}
 
 	MFnDagNode dagNode(mesh);
-	dagNode.setName("PotatoPlane");
+	dagNode.setName("ArchiWallTest");
 
 	MSelectionList selectionList;
 	selectionList.add("initialShadingGroup");
@@ -73,3 +70,21 @@ MStatus WallCreateCmd::doIt(const MArgList& args) {
 
 	return MS::kSuccess;
 }
+
+MStatus WallNode::initialize() {
+    MFnNumericAttribute nAttr;
+
+    widthAttr = nAttr.create("width", "w", MFnNumericData::kFloat, 5.0);
+    nAttr.setKeyable(true);
+    addAttribute(widthAttr);
+
+    heightAttr = nAttr.create("height", "h", MFnNumericData::kFloat, 3.0);
+    nAttr.setKeyable(true);
+    addAttribute(heightAttr);
+
+    return MS::kSuccess;
+}
+
+MTypeId WallNode::id(0x00002);
+MObject WallNode::widthAttr;
+MObject WallNode::heightAttr;

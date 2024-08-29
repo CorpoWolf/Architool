@@ -4,10 +4,16 @@
 
 MStatus initializePlugin(MObject obj) {
 	MFnPlugin plugin(obj, "Architools", "1.0", "Any");
-	return plugin.registerCommand("ArchiCreateWall", WallCreateCmd::creator);
+	plugin.registerNode("ArchiWallNode", WallNode::id, WallNode::creator, WallNode::initialize);
+	plugin.registerCommand("ArchiCreateWall", WallCreateCmd::creator);
+
+	return MS::kSuccess;
 }
 
 MStatus uninitializePlugin(MObject obj) {
 	MFnPlugin plugin(obj);
-	return plugin.deregisterCommand("ArchiCreateWall");
+	plugin.deregisterCommand("ArchiWallNode");
+	plugin.deregisterCommand("ArchiCreateWall");
+
+	return MS::kSuccess;
 }

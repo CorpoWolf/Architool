@@ -12,6 +12,7 @@ include($ENV{DEVKIT_LOCATION}/cmake/pluginEntry.cmake)
 
 set(SOURCE_FILES
     mpmain.cpp
+    ./wallTool/wallTool.cpp
 )
 
 set(LIBRARIES

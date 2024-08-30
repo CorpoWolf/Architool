@@ -11,12 +11,16 @@ public:
 	static void* creator() { return new WallCreateCmd(); }
 };
 
-class WallNode : public MPxNode {
+class ArchiWallNode : public MPxNode {
 public:
 	static MTypeId id;
 	static MObject widthAttr;
 	static MObject heightAttr;
-	WallNode() {}
-	static void* creator() { return new WallNode(); }
+	static MObject depthAttr;
+	static MObject outputMeshAttr;
+	static MObject transformNodeAttr;
+	ArchiWallNode() {}
+	static void* creator() { return new ArchiWallNode(); }
 	static MStatus initialize();
+	virtual MStatus compute(const MPlug& plug, MDataBlock& dataBlock) override;
 };

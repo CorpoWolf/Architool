@@ -20,7 +20,7 @@
 #include <vector>
 
 #include "./wallTool.h"
-#include "../archiMath/archiMath.h"
+#include "../imprMath/imprMath.h"
 
 MTypeId ArchiWallNode::id(0x13002);
 MObject ArchiWallNode::widthAttr;
@@ -74,20 +74,27 @@ MStatus ArchiWallNode::compute(const MPlug& plug, MDataBlock& data) {
 	float width = data.inputValue(widthAttr).asFloat(); // Step 1: Get the input values
 	float height = data.inputValue(heightAttr).asFloat();
 	float depth = data.inputValue(depthAttr).asFloat();
+	// MString myStringValue = data.inputValue(myStringAttr).asString();
+
+	// Convert the string to lowercase
+	// MString lowerCaseString = myStringValue.toLowerCase();
+	// Update the string attribute with the modified value
+	// MDataHandle stringHandle = data.outputValue(myStringAttr);
+	// stringHandle.set(lowerCaseString);
 
 	MFnMeshData meshDataFn;
 	MObject wallMeshData = meshDataFn.create(&status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 
 	MPointArray points;
-	points.append(imp_inch(-width / 2, 0, -depth / 2));
-	points.append(imp_inch(width / 2, 0, -depth / 2));
-	points.append(imp_inch(width / 2, height, -depth / 2));
-	points.append(imp_inch(-width / 2, height, -depth / 2));
-	points.append(imp_inch(-width / 2, 0, depth / 2));
-	points.append(imp_inch(width / 2, 0, depth / 2));
-	points.append(imp_inch(width / 2, height, depth / 2));
-	points.append(imp_inch(-width / 2, height, depth / 2));
+	points.append(imprMath::toInchMPoint(-width / 2, 0, -depth / 2));
+	points.append(imprMath::toInchMPoint(width / 2, 0, -depth / 2));
+	points.append(imprMath::toInchMPoint(width / 2, height, -depth / 2));
+	points.append(imprMath::toInchMPoint(-width / 2, height, -depth / 2));
+	points.append(imprMath::toInchMPoint(-width / 2, 0, depth / 2));
+	points.append(imprMath::toInchMPoint(width / 2, 0, depth / 2));
+	points.append(imprMath::toInchMPoint(width / 2, height, depth / 2));
+	points.append(imprMath::toInchMPoint(-width / 2, height, depth / 2));
 
 	MIntArray faceCounts;
 	MIntArray faceConnects;

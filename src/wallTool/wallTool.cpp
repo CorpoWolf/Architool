@@ -72,8 +72,8 @@ MStatus ArchiWallNode::compute(const MPlug& plug, MDataBlock& data) {
 	float height = data.inputValue(heightAttr).asFloat();
 	float depth = data.inputValue(depthAttr).asFloat();
 
-	MFnMeshData meshDataFn; // Step 5: 
-	MObject newMesh = meshDataFn.create(&status);
+	MFnMeshData meshDataFn;
+	MObject wallMeshData = meshDataFn.create(&status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 
 	MPointArray points;
@@ -95,13 +95,27 @@ MStatus ArchiWallNode::compute(const MPlug& plug, MDataBlock& data) {
 	faceCounts.append(4); faceConnects.append(3); faceConnects.append(2); faceConnects.append(6); faceConnects.append(7);  // Top face
 	faceCounts.append(4); faceConnects.append(0); faceConnects.append(1); faceConnects.append(5); faceConnects.append(4);  // Bottom face
 
-	// Create Shape Node
-	MFnMesh meshFn;
-	meshFn.create(points.length(), faceCounts.length(), points, faceCounts, faceConnects, MObject::kNullObj);
-	CHECK_MSTATUS_AND_RETURN_IT(status);
+	MFnMesh meshFn; // Create a new MFnMesh object that stores the mesh data but does not create the mesh
+	MObject newMesh = meshFn.create(
+		points.length(), 
+		faceCounts.length(), 
+		points, 
+		faceCounts, 
+		faceConnects, 
+		wallMeshData, 
+		&status
+	);
+	if (status != MS::kSuccess || newMesh.isNull()) {
+		MGlobal::displayError("Failed to create mesh or mesh is null");
+		return status;
+	}
 
-	MDataHandle outputHandle = data.outputValue(outputMeshAttr);
-	outputHandle.set(newMesh);
+	MDataHandle outputHandle = data.outputValue(outputMeshAttr); 
+	if (wallMeshData.isNull()) {
+		MGlobal::displayError("wallMeshData is null before setting output.");
+		return MS::kFailure;
+	}
+	outputHandle.set(wallMeshData);
 	data.setClean(plug);
 
 	MGlobal::displayInfo("Architools: Mesh Update!");
@@ -112,10 +126,6 @@ MStatus WallCreateCmd::doIt(const MArgList& args) {
 	MStatus status;
 
 	MGlobal::displayInfo("Running Wall Node doIt method");
-
-	MFnTransform transformFn; // Create the transform node first.
-	MObject transformNode = transformFn.create(MObject::kNullObj, &status); CHECK_MSTATUS_AND_RETURN_IT(status);
-	transformFn.setName("MyPotatoCubeOBJ", &status); CHECK_MSTATUS_AND_RETURN_IT(status);
 
 	MFnDependencyNode fn; // Creating the construction history node
 	MObject wallNodeObj = fn.create(ArchiWallNode::id, "WallNode", &status); CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -130,43 +140,34 @@ MStatus WallCreateCmd::doIt(const MArgList& args) {
 	depthPlug.setFloat(60.96f);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 
-	MPlug outputMeshPlug = fn.findPlug("outputMesh", true, &status);
+	MFnTransform transformFn; // Creating the transform node
+	MObject transformObj = transformFn.create(MObject::kNullObj, &status);
+	CHECK_MSTATUS_AND_RETURN_IT(status);
+
+	MFnDagNode dagNodeFn; // Creating the shape node
+	MObject shapeObj = dagNodeFn.create("mesh", transformObj, &status);
+	CHECK_MSTATUS_AND_RETURN_IT(status);
+
+	MFnDependencyNode shapeFn(shapeObj); // Connect the output mesh of WallNode to the input of the shape node
+	MPlug inMeshPlug = shapeFn.findPlug("inMesh", true, &status);
+	CHECK_MSTATUS_AND_RETURN_IT(status);
+
+	MPlug outputMeshPlug = fn.findPlug("outputMesh", true, &status); // Runs the compute method
 	if (!status) {
 		MGlobal::displayError("Failed to find outputMesh plug");
 		return status;
 	}
+
+	MDGModifier dgModifier;
+	dgModifier.connect(outputMeshPlug, inMeshPlug);
+	CHECK_MSTATUS_AND_RETURN_IT(dgModifier.doIt());
+	
 	MObject outputMeshObj;
-	status = outputMeshPlug.getValue(outputMeshObj);
+	status = outputMeshPlug.getValue(outputMeshObj); // Delivers the output of the compute method
 	if (!status) {
 		MGlobal::displayError("Failed to get outputMesh value");
 		return status;
 	}
-
-	MFnDagNode dagNode(outputMeshObj, &status); CHECK_MSTATUS_AND_RETURN_IT(status);
-	if (!outputMeshObj.hasFn(MFn::kDagNode)) {
-		MGlobal::displayError("outputMeshObj is not a DAG node.");
-		return MS::kFailure;
-	}
-	MString newName = dagNode.setName("ArchiWallTest"); CHECK_MSTATUS_AND_RETURN_IT(status);
-	if (newName != "ArchiWallTest") {
-		MGlobal::displayError("Failed to set the name of the DAG node.");
-		return MS::kFailure;
-	}
-
-	MSelectionList selectionList;
-	status = selectionList.add("initialShadingGroup"); CHECK_MSTATUS_AND_RETURN_IT(status);
-	MObject shadingGroupNode;
-	status = selectionList.getDependNode(0, shadingGroupNode); CHECK_MSTATUS_AND_RETURN_IT(status);
-
-	MGlobal::displayInfo("Post selectionList for shader");
-
-	if (shadingGroupNode.isNull()) {
-		MGlobal::displayError("Architools: initialShadingGroup shading group not found. Make sure it exists in the scene.");
-		return MStatus::kFailure;
-	}
-
-	MFnSet shadingGroup(shadingGroupNode, &status); CHECK_MSTATUS_AND_RETURN_IT(status);
-	status = shadingGroup.addMember(outputMeshObj); CHECK_MSTATUS_AND_RETURN_IT(status);
 
 	MGlobal::displayInfo("Wall node created, mesh generated, and assigned to shading group!");
 	return MS::kSuccess;

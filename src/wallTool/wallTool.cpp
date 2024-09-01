@@ -180,9 +180,11 @@ MStatus WallCreateCmd::doIt(const MArgList& args) {
 	MFnTransform transformFn; // Creating the transform node
 	MObject transformObj = transformFn.create(MObject::kNullObj, &status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
+	transformFn.setName("Archi_Wall");
 
 	MFnDagNode dagNodeFn; // Creating the shape node
 	MObject shapeObj = dagNodeFn.create("mesh", transformObj, &status);
+	dagNodeFn.setName("Archi_WallShape");
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 
 	MFnDependencyNode shapeFn(shapeObj); // Connect the output mesh of WallNode to the input of the shape node

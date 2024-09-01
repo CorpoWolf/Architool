@@ -18,6 +18,7 @@
 #include <maya/MFnMeshData.h>
 
 #include <vector>
+#include <format>
 
 #include "./wallTool.h"
 #include "../imprMath/imprMath.h"
@@ -74,6 +75,10 @@ MStatus ArchiWallNode::compute(const MPlug& plug, MDataBlock& data) {
 	float width = data.inputValue(widthAttr).asFloat(); // Step 1: Get the input values
 	float height = data.inputValue(heightAttr).asFloat();
 	float depth = data.inputValue(depthAttr).asFloat();
+
+	auto restult = imprMath::toInch(13.2, 25.0, 43.5, 23.75);
+	std::string resultString = std::format("Result: {}, {}, {}, {}", restult[0], restult[1], restult[2], restult[3]);
+	MGlobal::displayInfo(resultString.c_str());
 	// MString myStringValue = data.inputValue(myStringAttr).asString();
 
 	// Convert the string to lowercase

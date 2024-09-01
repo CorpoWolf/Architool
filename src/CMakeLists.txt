@@ -13,6 +13,7 @@ include($ENV{DEVKIT_LOCATION}/cmake/pluginEntry.cmake)
 set(SOURCE_FILES
     mpmain.cpp
     ./wallTool/wallTool.cpp
+    ./archiMath/archiMath.cpp
 )
 
 set(LIBRARIES

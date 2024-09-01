@@ -88,12 +88,42 @@ MStatus ArchiWallNode::compute(const MPlug& plug, MDataBlock& data) {
 
 	MIntArray faceCounts;
 	MIntArray faceConnects;
-	faceCounts.append(4); faceConnects.append(0); faceConnects.append(1); faceConnects.append(2); faceConnects.append(3);  // Front face
-	faceCounts.append(4); faceConnects.append(4); faceConnects.append(5); faceConnects.append(6); faceConnects.append(7);  // Back face
-	faceCounts.append(4); faceConnects.append(0); faceConnects.append(3); faceConnects.append(7); faceConnects.append(4);  // Left face
-	faceCounts.append(4); faceConnects.append(1); faceConnects.append(2); faceConnects.append(6); faceConnects.append(5);  // Right face
-	faceCounts.append(4); faceConnects.append(3); faceConnects.append(2); faceConnects.append(6); faceConnects.append(7);  // Top face
-	faceCounts.append(4); faceConnects.append(0); faceConnects.append(1); faceConnects.append(5); faceConnects.append(4);  // Bottom face
+	// Front face (Vertices: 0, 1, 2, 3)
+	faceCounts.append(4);
+	faceConnects.append(0);
+	faceConnects.append(1);
+	faceConnects.append(2);
+	faceConnects.append(3);
+	// Back face (Vertices: 4, 7, 6, 5)
+	faceCounts.append(4);
+	faceConnects.append(4);
+	faceConnects.append(7);
+	faceConnects.append(6);
+	faceConnects.append(5);
+	// Left face (Vertices: 0, 3, 7, 4)
+	faceCounts.append(4);
+	faceConnects.append(0);
+	faceConnects.append(3);
+	faceConnects.append(7);
+	faceConnects.append(4);
+	// Right face (Vertices: 1, 5, 6, 2)
+	faceCounts.append(4);
+	faceConnects.append(1);
+	faceConnects.append(5);
+	faceConnects.append(6);
+	faceConnects.append(2);
+	// Top face (Vertices: 3, 2, 6, 7)
+	faceCounts.append(4);
+	faceConnects.append(3);
+	faceConnects.append(2);
+	faceConnects.append(6);
+	faceConnects.append(7);
+	// Bottom face (Vertices: 0, 4, 5, 1)
+	faceCounts.append(4); 
+	faceConnects.append(0);
+	faceConnects.append(4);
+	faceConnects.append(5);
+	faceConnects.append(1);
 
 	MFnMesh meshFn; // Create a new MFnMesh object that stores the mesh data but does not create the mesh
 	MObject newMesh = meshFn.create(

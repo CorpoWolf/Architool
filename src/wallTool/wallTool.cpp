@@ -68,10 +68,6 @@ MStatus ArchiWallNode::compute(const MPlug& plug, MDataBlock& data) {
 		return MS::kUnknownParameter;
 	}
 
-	auto restult = imprLib::toInch(13.2, 25.0, 43.5, 23.75);
-	std::string resultString = std::format("Result: {}, {}, {}, {}", restult[0], restult[1], restult[2], restult[3]);
-	MGlobal::displayInfo(resultString.c_str());
-
 	MGlobal::displayInfo("ArchiWallNode::compute called");
 	MStatus status;
 
@@ -80,8 +76,11 @@ MStatus ArchiWallNode::compute(const MPlug& plug, MDataBlock& data) {
 	std::string Rdepth = data.inputValue(depthAttr).asString().asChar();
 
 	double width = imprLib::strFtIn(Rwidth).Ft * 12 + imprLib::strFtIn(Rwidth).Inch; // Step 2: Convert the input values to inches
+	MGlobal::displayInfo(std::format("Width: {}", width).c_str());
 	double height = imprLib::strFtIn(Rheight).Ft * 12 + imprLib::strFtIn(Rheight).Inch;
+	MGlobal::displayInfo(std::format("Height: {}", height).c_str());
 	double depth = imprLib::strFtIn(Rdepth).Ft * 12 + imprLib::strFtIn(Rdepth).Inch;
+	MGlobal::displayInfo(std::format("Depth: {}", depth).c_str());
 
 	MFnMeshData meshDataFn;
 	MObject wallMeshData = meshDataFn.create(&status);

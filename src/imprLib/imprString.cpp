@@ -5,7 +5,7 @@
 #include "imprString.h"
 
 namespace imprLib {
-	const std::string delimiters[] = {"ft", "'", "inch", "\""};
+	const std::string delimiters[] = {"ft", "'", "in", "\""};
 
 	FtIn strFtIn(std::string strData) {
 		std::vector<std::string> tokens;
@@ -25,7 +25,7 @@ namespace imprLib {
 				if (delim == "ft" || delim == "'") {
 					ft = std::stod(strData.substr(0, pos));
 					strData = strData.substr(pos + delim.length());
-				} else if (delim == "inch" || delim == "\"") {
+				} else if (delim == "in" || delim == "\"") {
 					inch = std::stod(strData.substr(0, pos));
 					strData = strData.substr(pos + delim.length());
 				}

@@ -34,15 +34,15 @@ MStatus ArchiWallNode::initialize() {
 	MFnNumericAttribute nAttr;
 	MFnTypedAttribute tAttr;
 
-	widthAttr = nAttr.create("width", "w", MFnNumericData::kFloat, 1.0);
+	widthAttr = nAttr.create("width", "w", MFnData::kString, "1'0\"");
 	nAttr.setKeyable(true);
 	addAttribute(widthAttr);
 
-	heightAttr = nAttr.create("height", "h", MFnNumericData::kFloat, 1.0);
+	heightAttr = nAttr.create("height", "h", MFnData::kString, "1'0\"");
 	nAttr.setKeyable(true);
 	addAttribute(heightAttr);
 
-	depthAttr = nAttr.create("depth", "d", MFnNumericData::kFloat, 1.0);
+	depthAttr = nAttr.create("depth", "d", MFnData::kString, "1'0\"");
 	nAttr.setKeyable(true);
 	addAttribute(depthAttr);
 
@@ -69,21 +69,20 @@ MStatus ArchiWallNode::compute(const MPlug& plug, MDataBlock& data) {
 		return MS::kUnknownParameter;
 	}
 
-	MGlobal::displayInfo("ArchiWallNode::compute called");
-	MStatus status;
-
-	std::string width = data.inputValue(widthAttr).asString(); // Step 1: Get the input values
-	std::string height = data.inputValue(heightAttr).asString();
-	std::string depth = data.inputValue(depthAttr).asString();
-
 	auto restult = imprLib::toInch(13.2, 25.0, 43.5, 23.75);
 	std::string resultString = std::format("Result: {}, {}, {}, {}", restult[0], restult[1], restult[2], restult[3]);
 	MGlobal::displayInfo(resultString.c_str());
-	
-	// MString lowerCaseString = myStringValue.toLowerCase();
-	// Update the string attribute with the modified value
-	// MDataHandle stringHandle = data.outputValue(myStringAttr);
-	// stringHandle.set(lowerCaseString);
+
+	MGlobal::displayInfo("ArchiWallNode::compute called");
+	MStatus status;
+
+	std::string Rwidth = data.inputValue(widthAttr).asString(); // Step 1: Get the input values
+	std::string Rheight = data.inputValue(heightAttr).asString();
+	std::string Rdepth = data.inputValue(depthAttr).asString();
+
+	double width = imprLib::strFtIn(Rwidth).Ft * 12 + imprLib::strFtIn(Rwidth).Inch; // Step 2: Convert the input values to inches
+	double height = imprLib::strFtIn(Rheight).Ft * 12 + imprLib::strFtIn(Rheight).Inch;
+	double depth = imprLib::strFtIn(Rdepth).Ft * 12 + imprLib::strFtIn(Rdepth).Inch;
 
 	MFnMeshData meshDataFn;
 	MObject wallMeshData = meshDataFn.create(&status);
@@ -178,13 +177,13 @@ MStatus WallCreateCmd::doIt(const MArgList& args) {
 	MObject wallNodeObj = fn.create(ArchiWallNode::id, "WallNode", &status); CHECK_MSTATUS_AND_RETURN_IT(status);
 
 	MPlug widthPlug = fn.findPlug("width", true);
-	widthPlug.setFloat(24.0f);
+	widthPlug.setString("24'0\"");
 
 	MPlug heightPlug = fn.findPlug("height", true);
-	heightPlug.setFloat(24.0f); 
+	heightPlug.setString("24'0\"");
 
 	MPlug depthPlug = fn.findPlug("depth", true);
-	depthPlug.setFloat(24.0f);
+	depthPlug.setString("24'0\"");
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 
 	MFnTransform transformFn; // Creating the transform node

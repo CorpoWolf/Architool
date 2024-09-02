@@ -31,19 +31,18 @@ MObject ArchiWallNode::outputMeshAttr;
 MObject ArchiWallNode::transformNodeAttr;
 
 MStatus ArchiWallNode::initialize() {
-	MFnNumericAttribute nAttr;
 	MFnTypedAttribute tAttr;
 
-	widthAttr = nAttr.create("width", "w", MFnData::kString, "1'0\"");
-	nAttr.setKeyable(true);
+	widthAttr = tAttr.create("width", "w", MFnData::kString);
+	tAttr.setKeyable(true);
 	addAttribute(widthAttr);
 
-	heightAttr = nAttr.create("height", "h", MFnData::kString, "1'0\"");
-	nAttr.setKeyable(true);
+	heightAttr = tAttr.create("height", "h", MFnData::kString);
+	tAttr.setKeyable(true);
 	addAttribute(heightAttr);
 
-	depthAttr = nAttr.create("depth", "d", MFnData::kString, "1'0\"");
-	nAttr.setKeyable(true);
+	depthAttr = tAttr.create("depth", "d", MFnData::kString);
+	tAttr.setKeyable(true);
 	addAttribute(depthAttr);
 
 	outputMeshAttr = tAttr.create("outputMesh", "out", MFnData::kMesh);
@@ -76,9 +75,9 @@ MStatus ArchiWallNode::compute(const MPlug& plug, MDataBlock& data) {
 	MGlobal::displayInfo("ArchiWallNode::compute called");
 	MStatus status;
 
-	std::string Rwidth = data.inputValue(widthAttr).asString(); // Step 1: Get the input values
-	std::string Rheight = data.inputValue(heightAttr).asString();
-	std::string Rdepth = data.inputValue(depthAttr).asString();
+	std::string Rwidth = data.inputValue(widthAttr).asString().asChar(); // Step 1: Get the input values
+	std::string Rheight = data.inputValue(heightAttr).asString().asChar();
+	std::string Rdepth = data.inputValue(depthAttr).asString().asChar();
 
 	double width = imprLib::strFtIn(Rwidth).Ft * 12 + imprLib::strFtIn(Rwidth).Inch; // Step 2: Convert the input values to inches
 	double height = imprLib::strFtIn(Rheight).Ft * 12 + imprLib::strFtIn(Rheight).Inch;

@@ -4,5 +4,5 @@ namespace imprLib {
 		double Inch;
 	};
 
-	FtIn parseImprString(const std::string& strData);
+	FtIn strFtIn(std::string strData);
 }

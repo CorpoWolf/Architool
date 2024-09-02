@@ -5,9 +5,9 @@
 #include "imprString.h"
 
 namespace imprLib {
-	const std::string deliminator[] = {"ft", "'", "inch", "\""};
+	const std::string delimiters[] = {"ft", "'", "inch", "\""};
 
-	FtIn parseImprString(const std::string& strData) {
+	FtIn strFtIn(std::string strData) {
 		std::vector<std::string> tokens;
 		std::string token;
 

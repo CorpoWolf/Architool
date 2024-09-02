@@ -176,13 +176,13 @@ MStatus WallCreateCmd::doIt(const MArgList& args) {
 	MObject wallNodeObj = fn.create(ArchiWallNode::id, "WallNode", &status); CHECK_MSTATUS_AND_RETURN_IT(status);
 
 	MPlug widthPlug = fn.findPlug("width", true);
-	widthPlug.setString("24'0\"");
+	widthPlug.setString("2'0\"");
 
 	MPlug heightPlug = fn.findPlug("height", true);
-	heightPlug.setString("24'0\"");
+	heightPlug.setString("2'0\"");
 
 	MPlug depthPlug = fn.findPlug("depth", true);
-	depthPlug.setString("24'0\"");
+	depthPlug.setString("2'0\"");
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 
 	MFnTransform transformFn; // Creating the transform node

@@ -15,7 +15,8 @@ include($ENV{DEVKIT_LOCATION}/cmake/pluginEntry.cmake)
 set(SOURCE_FILES
     mpmain.cpp
     ./wallTool/wallTool.cpp
-    ./imprMath/imprMath.cpp
+    ./imprLib/imprMath.cpp
+    ./imprLib/imprString.cpp
 )
 
 set(LIBRARIES

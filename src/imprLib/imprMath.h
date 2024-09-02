@@ -4,7 +4,7 @@
 #include <array>
 
 constexpr double CmToInch = 2.54;
-namespace imprMath {
+namespace imprLib {
 	MPoint toInchMPoint(double x, double y, double z);
 	MPoint toInchMPoint(double x, double y);
 

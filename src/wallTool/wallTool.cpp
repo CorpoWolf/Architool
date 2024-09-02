@@ -5,7 +5,6 @@
 #include <maya/MObject.h>
 #include <maya/MFnDagNode.h>
 #include <maya/MFnTransform.h>
-#include <maya/MDagPath.h>
 #include <maya/MSelectionList.h>
 #include <maya/MFnSet.h>
 #include <maya/MItSelectionList.h>
@@ -21,7 +20,8 @@
 #include <format>
 
 #include "./wallTool.h"
-#include "../imprMath/imprMath.h"
+#include "../imprLib/imprMath.h"
+#include "../imprLib/imprString.h"
 
 MTypeId ArchiWallNode::id(0x13002);
 MObject ArchiWallNode::widthAttr;
@@ -31,19 +31,18 @@ MObject ArchiWallNode::outputMeshAttr;
 MObject ArchiWallNode::transformNodeAttr;
 
 MStatus ArchiWallNode::initialize() {
-	MFnNumericAttribute nAttr;
 	MFnTypedAttribute tAttr;
 
-	widthAttr = nAttr.create("width", "w", MFnNumericData::kFloat, 1.0);
-	nAttr.setKeyable(true);
+	widthAttr = tAttr.create("width", "w", MFnData::kString);
+	tAttr.setKeyable(true);
 	addAttribute(widthAttr);
 
-	heightAttr = nAttr.create("height", "h", MFnNumericData::kFloat, 1.0);
-	nAttr.setKeyable(true);
+	heightAttr = tAttr.create("height", "h", MFnData::kString);
+	tAttr.setKeyable(true);
 	addAttribute(heightAttr);
 
-	depthAttr = nAttr.create("depth", "d", MFnNumericData::kFloat, 1.0);
-	nAttr.setKeyable(true);
+	depthAttr = tAttr.create("depth", "d", MFnData::kString);
+	tAttr.setKeyable(true);
 	addAttribute(depthAttr);
 
 	outputMeshAttr = tAttr.create("outputMesh", "out", MFnData::kMesh);
@@ -72,34 +71,30 @@ MStatus ArchiWallNode::compute(const MPlug& plug, MDataBlock& data) {
 	MGlobal::displayInfo("ArchiWallNode::compute called");
 	MStatus status;
 
-	float width = data.inputValue(widthAttr).asFloat(); // Step 1: Get the input values
-	float height = data.inputValue(heightAttr).asFloat();
-	float depth = data.inputValue(depthAttr).asFloat();
+	std::string Rwidth = data.inputValue(widthAttr).asString().asChar(); // Step 1: Get the input values
+	std::string Rheight = data.inputValue(heightAttr).asString().asChar();
+	std::string Rdepth = data.inputValue(depthAttr).asString().asChar();
 
-	auto restult = imprMath::toInch(13.2, 25.0, 43.5, 23.75);
-	std::string resultString = std::format("Result: {}, {}, {}, {}", restult[0], restult[1], restult[2], restult[3]);
-	MGlobal::displayInfo(resultString.c_str());
-	// MString myStringValue = data.inputValue(myStringAttr).asString();
-
-	// Convert the string to lowercase
-	// MString lowerCaseString = myStringValue.toLowerCase();
-	// Update the string attribute with the modified value
-	// MDataHandle stringHandle = data.outputValue(myStringAttr);
-	// stringHandle.set(lowerCaseString);
+	double width = imprLib::strFtIn(Rwidth).Ft * 12 + imprLib::strFtIn(Rwidth).Inch; // Step 2: Convert the input values to inches
+	MGlobal::displayInfo(std::format("Width: {}", width).c_str());
+	double height = imprLib::strFtIn(Rheight).Ft * 12 + imprLib::strFtIn(Rheight).Inch;
+	MGlobal::displayInfo(std::format("Height: {}", height).c_str());
+	double depth = imprLib::strFtIn(Rdepth).Ft * 12 + imprLib::strFtIn(Rdepth).Inch;
+	MGlobal::displayInfo(std::format("Depth: {}", depth).c_str());
 
 	MFnMeshData meshDataFn;
 	MObject wallMeshData = meshDataFn.create(&status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 
 	MPointArray points;
-	points.append(imprMath::toInchMPoint(-width / 2, 0, -depth / 2));
-	points.append(imprMath::toInchMPoint(width / 2, 0, -depth / 2));
-	points.append(imprMath::toInchMPoint(width / 2, height, -depth / 2));
-	points.append(imprMath::toInchMPoint(-width / 2, height, -depth / 2));
-	points.append(imprMath::toInchMPoint(-width / 2, 0, depth / 2));
-	points.append(imprMath::toInchMPoint(width / 2, 0, depth / 2));
-	points.append(imprMath::toInchMPoint(width / 2, height, depth / 2));
-	points.append(imprMath::toInchMPoint(-width / 2, height, depth / 2));
+	points.append(imprLib::toInchMPoint(-width / 2, 0, -depth / 2));
+	points.append(imprLib::toInchMPoint(width / 2, 0, -depth / 2));
+	points.append(imprLib::toInchMPoint(width / 2, height, -depth / 2));
+	points.append(imprLib::toInchMPoint(-width / 2, height, -depth / 2));
+	points.append(imprLib::toInchMPoint(-width / 2, 0, depth / 2));
+	points.append(imprLib::toInchMPoint(width / 2, 0, depth / 2));
+	points.append(imprLib::toInchMPoint(width / 2, height, depth / 2));
+	points.append(imprLib::toInchMPoint(-width / 2, height, depth / 2));
 
 	MIntArray faceCounts;
 	MIntArray faceConnects;
@@ -180,13 +175,13 @@ MStatus WallCreateCmd::doIt(const MArgList& args) {
 	MObject wallNodeObj = fn.create(ArchiWallNode::id, "WallNode", &status); CHECK_MSTATUS_AND_RETURN_IT(status);
 
 	MPlug widthPlug = fn.findPlug("width", true);
-	widthPlug.setFloat(24.0f);
+	widthPlug.setString("2'0\"");
 
 	MPlug heightPlug = fn.findPlug("height", true);
-	heightPlug.setFloat(24.0f); 
+	heightPlug.setString("2'0\"");
 
 	MPlug depthPlug = fn.findPlug("depth", true);
-	depthPlug.setFloat(24.0f);
+	depthPlug.setString("2'0\"");
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 
 	MFnTransform transformFn; // Creating the transform node

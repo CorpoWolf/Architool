@@ -5,7 +5,6 @@
 #include <maya/MObject.h>
 #include <maya/MFnDagNode.h>
 #include <maya/MFnTransform.h>
-#include <maya/MDagPath.h>
 #include <maya/MSelectionList.h>
 #include <maya/MFnSet.h>
 #include <maya/MItSelectionList.h>
@@ -72,16 +71,14 @@ MStatus ArchiWallNode::compute(const MPlug& plug, MDataBlock& data) {
 	MGlobal::displayInfo("ArchiWallNode::compute called");
 	MStatus status;
 
-	float width = data.inputValue(widthAttr).asFloat(); // Step 1: Get the input values
-	float height = data.inputValue(heightAttr).asFloat();
-	float depth = data.inputValue(depthAttr).asFloat();
+	std::string width = data.inputValue(widthAttr).asString(); // Step 1: Get the input values
+	std::string height = data.inputValue(heightAttr).asString();
+	std::string depth = data.inputValue(depthAttr).asString();
 
 	auto restult = imprMath::toInch(13.2, 25.0, 43.5, 23.75);
 	std::string resultString = std::format("Result: {}, {}, {}, {}", restult[0], restult[1], restult[2], restult[3]);
 	MGlobal::displayInfo(resultString.c_str());
-	// MString myStringValue = data.inputValue(myStringAttr).asString();
-
-	// Convert the string to lowercase
+	
 	// MString lowerCaseString = myStringValue.toLowerCase();
 	// Update the string attribute with the modified value
 	// MDataHandle stringHandle = data.outputValue(myStringAttr);

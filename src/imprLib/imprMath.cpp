@@ -1,6 +1,6 @@
 #include "imprMath.h"
 
-namespace imprMath {
+namespace imprLib {
 
 	MPoint toInchMPoint(double x, double y, double z) {
 		return MPoint(x * CmToInch, y * CmToInch, z * CmToInch);

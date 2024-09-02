@@ -2,15 +2,10 @@
 #include <vector>
 #include <sstream>
 #include <cctype>
-#include "imprMath.h"
+#include "imprString.h"
 
-namespace imprMath {
+namespace imprLib {
 	const std::string deliminator[] = {"ft", "'", "inch", "\""};
-
-	struct FtIn {
-		double Ft;
-		double Inch;
-	};
 
 	FtIn parseImprString(const std::string& strData) {
 		std::vector<std::string> tokens;

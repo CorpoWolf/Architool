@@ -20,7 +20,8 @@
 #include <format>
 
 #include "./wallTool.h"
-#include "../imprMath/imprMath.h"
+#include "../imprLib/imprMath.h"
+#include "../imprLib/imprString.h"
 
 MTypeId ArchiWallNode::id(0x13002);
 MObject ArchiWallNode::widthAttr;
@@ -75,7 +76,7 @@ MStatus ArchiWallNode::compute(const MPlug& plug, MDataBlock& data) {
 	std::string height = data.inputValue(heightAttr).asString();
 	std::string depth = data.inputValue(depthAttr).asString();
 
-	auto restult = imprMath::toInch(13.2, 25.0, 43.5, 23.75);
+	auto restult = imprLib::toInch(13.2, 25.0, 43.5, 23.75);
 	std::string resultString = std::format("Result: {}, {}, {}, {}", restult[0], restult[1], restult[2], restult[3]);
 	MGlobal::displayInfo(resultString.c_str());
 	
@@ -89,14 +90,14 @@ MStatus ArchiWallNode::compute(const MPlug& plug, MDataBlock& data) {
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 
 	MPointArray points;
-	points.append(imprMath::toInchMPoint(-width / 2, 0, -depth / 2));
-	points.append(imprMath::toInchMPoint(width / 2, 0, -depth / 2));
-	points.append(imprMath::toInchMPoint(width / 2, height, -depth / 2));
-	points.append(imprMath::toInchMPoint(-width / 2, height, -depth / 2));
-	points.append(imprMath::toInchMPoint(-width / 2, 0, depth / 2));
-	points.append(imprMath::toInchMPoint(width / 2, 0, depth / 2));
-	points.append(imprMath::toInchMPoint(width / 2, height, depth / 2));
-	points.append(imprMath::toInchMPoint(-width / 2, height, depth / 2));
+	points.append(imprLib::toInchMPoint(-width / 2, 0, -depth / 2));
+	points.append(imprLib::toInchMPoint(width / 2, 0, -depth / 2));
+	points.append(imprLib::toInchMPoint(width / 2, height, -depth / 2));
+	points.append(imprLib::toInchMPoint(-width / 2, height, -depth / 2));
+	points.append(imprLib::toInchMPoint(-width / 2, 0, depth / 2));
+	points.append(imprLib::toInchMPoint(width / 2, 0, depth / 2));
+	points.append(imprLib::toInchMPoint(width / 2, height, depth / 2));
+	points.append(imprLib::toInchMPoint(-width / 2, height, depth / 2));
 
 	MIntArray faceCounts;
 	MIntArray faceConnects;

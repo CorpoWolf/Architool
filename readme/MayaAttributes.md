@@ -2,7 +2,6 @@
 In creating nodes for Maya there are multiple kinds of attributes for different data types.  
 
 # MFnNumericAttribute
-**Stuff**
 To be able to use simply `#include <maya/MFnNumericAttribute.h>`
 This node can be used for numeric types of data and:
 - MFnNumericData::kBoolean
@@ -12,7 +11,6 @@ This node can be used for numeric types of data and:
 - MFnNumericData::k3Float
 
 # MFnTypedAttribute
-**Stuff**
 To be able to use simply `#include <maya/MFnTypedAttribute.h>`
 This node can be used for string data and:
 - MFnData::kMesh

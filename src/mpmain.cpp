@@ -1,6 +1,6 @@
 #include <maya/MFnPlugin.h>
 #include <maya/MGlobal.h>
-#include "./wallTool/wallTool.h"
+#include "./ArchiWalls/wallGen.h"
 
 MStatus initializePlugin(MObject obj) {
 	MFnPlugin plugin(obj, "Architools", "1.0", "Any");

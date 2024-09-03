@@ -13,14 +13,14 @@ project(${PROJECT_NAME})
 include($ENV{DEVKIT_LOCATION}/cmake/pluginEntry.cmake)
 
 set(SOURCE_FILES
-    mpmain.cpp
-    ./wallTool/wallTool.cpp
-    ./imprLib/imprMath.cpp
-    ./imprLib/imprString.cpp
+	mpmain.cpp
+	./ArchiWalls/wallGen.cpp
+	./imprLib/imprMath.cpp
+	./imprLib/imprString.cpp
 )
 
 set(LIBRARIES
-    OpenMaya Foundation
+	OpenMaya Foundation
 )
 
 build_plugin()

@@ -19,7 +19,7 @@
 #include <vector>
 #include <format>
 
-#include "./wallTool.h"
+#include "./wallGen.h"
 #include "../imprLib/imprMath.h"
 #include "../imprLib/imprString.h"
 

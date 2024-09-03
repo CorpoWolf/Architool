@@ -172,7 +172,7 @@ MStatus WallCreateCmd::doIt(const MArgList& args) {
 	MGlobal::displayInfo("Running Wall Node doIt method");
 
 	MFnDependencyNode fn; // Creating the construction history node
-	MObject wallNodeObj = fn.create(ArchiWallNode::id, "WallNode", &status); CHECK_MSTATUS_AND_RETURN_IT(status);
+	MObject wallNodeObj = fn.create(ArchiWallNode::id, "ArchiWallNode", &status); CHECK_MSTATUS_AND_RETURN_IT(status);
 
 	MPlug widthPlug = fn.findPlug("width", true);
 	widthPlug.setString("2'0\"");
@@ -187,11 +187,11 @@ MStatus WallCreateCmd::doIt(const MArgList& args) {
 	MFnTransform transformFn; // Creating the transform node
 	MObject transformObj = transformFn.create(MObject::kNullObj, &status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
-	transformFn.setName("Archi_Wall");
+	transformFn.setName("ArchiWall");
 
 	MFnDagNode dagNodeFn; // Creating the shape node
 	MObject shapeObj = dagNodeFn.create("mesh", transformObj, &status);
-	dagNodeFn.setName("Archi_WallShape");
+	dagNodeFn.setName("ArchiWallShape");
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 
 	MFnDependencyNode shapeFn(shapeObj); // Connect the output mesh of WallNode to the input of the shape node

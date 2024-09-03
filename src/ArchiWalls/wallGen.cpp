@@ -23,12 +23,11 @@
 #include "../imprLib/imprMath.h"
 #include "../imprLib/imprString.h"
 
-MTypeId ArchiWallNode::id(0x13002);
+MTypeId ArchiWallNode::id(0x13001);
 MObject ArchiWallNode::widthAttr;
 MObject ArchiWallNode::heightAttr;
 MObject ArchiWallNode::depthAttr;
 MObject ArchiWallNode::outputMeshAttr;
-MObject ArchiWallNode::transformNodeAttr;
 
 MStatus ArchiWallNode::initialize() {
 	MFnTypedAttribute tAttr;
@@ -49,11 +48,6 @@ MStatus ArchiWallNode::initialize() {
 	tAttr.setStorable(false);
 	tAttr.setWritable(false);
 	addAttribute(outputMeshAttr);
-
-	transformNodeAttr = tAttr.create("transformNode", "tn", MFnData::kMesh);
-	tAttr.setStorable(false);
-	tAttr.setWritable(true);
-	addAttribute(transformNodeAttr);
 
 	// Define dependencies between inputs and outputs
 	attributeAffects(widthAttr, outputMeshAttr);

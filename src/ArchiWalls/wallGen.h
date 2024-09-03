@@ -18,7 +18,6 @@ public:
 	static MObject heightAttr;
 	static MObject depthAttr;
 	static MObject outputMeshAttr;
-	static MObject transformNodeAttr;
 	ArchiWallNode() {}
 	static void* creator() { return new ArchiWallNode(); }
 	static MStatus initialize();

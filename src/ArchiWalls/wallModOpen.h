@@ -1,6 +1,6 @@
 // Create wall openings for door and windows
 
-class WallModOpen : public MPxCommand {
+class WallModOpenCmd : public MPxCommand {
 public:
 	WallModOpen() {}
 	virtual MStatus doIt(const MArgList& args);
@@ -12,6 +12,8 @@ public:
 	static MTypeId id; // set to id(0x13002)
 	static MObject widthAttr;
 	static MObject heightAttr;
+
+	static MObject inputMeshAttr;
 	static MObject outputMeshAttr;
 	ArchiWallOpenNode() {}
 	static void* creator() { return new ArchiWallOpenNode(); }

@@ -6,8 +6,53 @@
 #include <maya/MIntArray.h>
 #include <maya/MObject.h>
 #include <maya/MFnDagNode.h>
+#include <maya/MFnTypedAttribute.h>
 
 MTypeId ArchiWallOpenNode::id(0x13002);
 MObject ArchiWallOpenNode::widthAttr;
 MObject ArchiWallOpenNode::heightAttr;
+MObject ArchiWallOpenNode::inputMeshAttr;
 MObject ArchiWallOpenNode::outputMeshAttr;
+
+MStatus ArchiWallOpenNode::initialize() {
+	MFnTypedAttribute tAttr;
+
+	widthAttr = tAttr.create("width", "w", MFnData::kString);
+	tAttr.setKeyable(true);
+	addAttribute(widthAttr);
+
+	heightAttr = tAttr.create("height", "h", MFnData::kString);
+	tAttr.setKeyable(true);
+	addAttribute(heightAttr);
+
+	inputMeshAttr = tAttr.create("inputMesh", "inMesh", MFnData::kMesh);
+	tAttr.setStorable(false);
+	tAttr.setWritable(false);
+	addAttribute(inputMeshAttr);
+
+	outputMeshAttr = tAttr.create("outputMesh", "outMesh", MFnData::kMesh);
+	tAttr.setStorable(false);
+	tAttr.setWritable(false);
+	addAttribute(outputMeshAttr);
+
+	attributeAffects(widthAttr, outputMeshAttr);
+	attributeAffects(heightAttr, outputMeshAttr);
+
+	return MS::kSuccess;
+}
+
+MStatus ArchiWallOpenNode::compute(const MPlug& plug, MDataBlock& data) {
+	if (plug != outputMeshAttr) {
+		return MS::kUnknownParameter;
+	}
+
+	MStatus status;
+
+	return MS::kSuccess;
+}
+
+MStatus WallModOpenCmd::doIt(const MArgList& args) {
+	MGlobal::displayInfo("WallModOpen command executed");
+
+	return MS::kSuccess;
+}

@@ -8,6 +8,9 @@ MStatus initializePlugin(MObject obj) {
 	plugin.registerNode("ArchiWallNode", ArchiWallNode::id, ArchiWallNode::creator, ArchiWallNode::initialize);
 	plugin.registerCommand("ArchiCreateWall", WallCreateCmd::creator);
 
+	plugin.registerNode("ArchiWallOpenNode", ArchiWallOpenNode::id, ArchiWallOpenNode::creator, ArchiWallOpenNode::initialize);
+	plugin.registerCommand("ArchiModWallOpen", WallModOpenCmd::creator);
+
 	return MS::kSuccess;
 }
 
@@ -16,6 +19,9 @@ MStatus uninitializePlugin(MObject obj) {
 
 	plugin.deregisterNode(ArchiWallNode::id);
 	plugin.deregisterCommand("ArchiCreateWall");
+
+	plugin.deregisterNode(ArchiWallOpenNode::id);
+	plugin.deregisterCommand("ArchiModWallOpen");
 
 	return MS::kSuccess;
 }

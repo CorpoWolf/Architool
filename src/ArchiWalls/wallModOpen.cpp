@@ -7,3 +7,7 @@
 #include <maya/MObject.h>
 #include <maya/MFnDagNode.h>
 
+MTypeId ArchiWallOpenNode::id(0x13002);
+MObject ArchiWallOpenNode::widthAttr;
+MObject ArchiWallOpenNode::heightAttr;
+MObject ArchiWallOpenNode::outputMeshAttr;

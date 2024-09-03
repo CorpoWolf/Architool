@@ -38,6 +38,12 @@ MStatus ArchiWallOpenNode::initialize() {
 	attributeAffects(widthAttr, outputMeshAttr);
 	attributeAffects(heightAttr, outputMeshAttr);
 
+	MDataHandle outputHandle = dataBlock.outputValue(outputMesh);
+	MFnMeshData dataCreator;
+	MObject outMesh = dataCreator.create();
+
+
+
 	return MS::kSuccess;
 }
 
@@ -47,6 +53,22 @@ MStatus ArchiWallOpenNode::compute(const MPlug& plug, MDataBlock& data) {
 	}
 
 	MStatus status;
+	MDataHandle inputMeshHandle = data.inputValue(inputMesh);
+	MObject inMesh = inputMeshHandle.asMesh();
+
+	MFnMesh meshFn(inMesh);
+	MPointArray points;
+	meshFn.getPoints(points);
+
+	MObject newMesh = meshFn.create( // Going to need verification - placeholder for now
+		points.length(),
+		faceCounts.length(),
+		points,
+		faceCounts,
+		faceConnects,
+		wallMeshData,
+		&status
+	);
 
 	return MS::kSuccess;
 }

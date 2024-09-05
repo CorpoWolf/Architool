@@ -15,6 +15,7 @@ include($ENV{DEVKIT_LOCATION}/cmake/pluginEntry.cmake)
 set(SOURCE_FILES
 	mpmain.cpp
 	./ArchiWalls/wallGen.cpp
+	./ArchiWalls/wallModOpen.cpp
 	./imprLib/imprMath.cpp
 	./imprLib/imprString.cpp
 )

@@ -7,6 +7,10 @@
 #include <maya/MObject.h>
 #include <maya/MFnDagNode.h>
 #include <maya/MFnTypedAttribute.h>
+#include <maya/MPointArray.h>
+#include <maya/MFnMeshData.h>
+
+#include "./wallModOpen.h"
 
 MTypeId ArchiWallOpenNode::id(0x13002);
 MObject ArchiWallOpenNode::widthAttr;
@@ -38,12 +42,6 @@ MStatus ArchiWallOpenNode::initialize() {
 	attributeAffects(widthAttr, outputMeshAttr);
 	attributeAffects(heightAttr, outputMeshAttr);
 
-	MDataHandle outputHandle = dataBlock.outputValue(outputMesh);
-	MFnMeshData dataCreator;
-	MObject outMesh = dataCreator.create();
-
-
-
 	return MS::kSuccess;
 }
 
@@ -53,22 +51,26 @@ MStatus ArchiWallOpenNode::compute(const MPlug& plug, MDataBlock& data) {
 	}
 
 	MStatus status;
-	MDataHandle inputMeshHandle = data.inputValue(inputMesh);
+	MDataHandle inputMeshHandle = data.inputValue(inputMeshAttr);
 	MObject inMesh = inputMeshHandle.asMesh();
 
 	MFnMesh meshFn(inMesh);
 	MPointArray points;
 	meshFn.getPoints(points);
 
-	MObject newMesh = meshFn.create( // Going to need verification - placeholder for now
-		points.length(),
-		faceCounts.length(),
-		points,
-		faceCounts,
-		faceConnects,
-		wallMeshData,
-		&status
-	);
+	// MObject newMesh = meshFn.create( // Going to need verification - placeholder for now
+	// 	points.length(),
+	// 	faceCounts.length(),
+	// 	points,
+	// 	faceCounts,
+	// 	faceConnects,
+	// 	wallMeshData,
+	// 	&status
+	// );
+
+	MDataHandle outputHandle = data.outputValue(outputMeshAttr);
+	MFnMeshData dataCreator;
+	MObject outMesh = dataCreator.create();
 
 	return MS::kSuccess;
 }

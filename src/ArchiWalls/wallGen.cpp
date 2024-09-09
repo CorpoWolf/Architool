@@ -11,8 +11,6 @@
 #include <maya/MFnDependencyNode.h>
 #include <maya/MPxCommand.h>
 #include <maya/MPxNode.h>
-#include <maya/MFnNumericAttribute.h>
-#include <maya/MFnTypedAttribute.h>
 #include <maya/MPointArray.h>
 #include <maya/MFnMeshData.h>
 
@@ -27,10 +25,12 @@ MTypeId ArchiWallNode::id(0x13001);
 MObject ArchiWallNode::widthAttr;
 MObject ArchiWallNode::heightAttr;
 MObject ArchiWallNode::depthAttr;
+MObject ArchiWallNode::wallTypeAttr;
 MObject ArchiWallNode::outputMeshAttr;
 
 MStatus ArchiWallNode::initialize() {
 	MFnTypedAttribute tAttr;
+	MFnEnumAttribute eAttr;
 
 	widthAttr = tAttr.create("width", "w", MFnData::kString);
 	tAttr.setKeyable(true);
@@ -44,6 +44,13 @@ MStatus ArchiWallNode::initialize() {
 	tAttr.setKeyable(true);
 	addAttribute(depthAttr);
 
+	wallTypeAttr = eAttr.create("wallType", "wt", 0);
+	eAttr.addField("Flat Wall", 0);
+	eAttr.addField("Corner Wall", 1);
+	eAttr.addField("Nook Wall", 2);
+	eAttr.setKeyable(true);
+	addAttribute(wallTypeAttr);
+
 	outputMeshAttr = tAttr.create("outputMesh", "out", MFnData::kMesh);
 	tAttr.setStorable(false);
 	tAttr.setWritable(false);
@@ -53,6 +60,7 @@ MStatus ArchiWallNode::initialize() {
 	attributeAffects(widthAttr, outputMeshAttr);
 	attributeAffects(heightAttr, outputMeshAttr);
 	attributeAffects(depthAttr, outputMeshAttr);
+	attributeAffects(wallTypeAttr, outputMeshAttr);
 
 	return MS::kSuccess;
 }
@@ -68,6 +76,7 @@ MStatus ArchiWallNode::compute(const MPlug& plug, MDataBlock& data) {
 	std::string Rwidth = data.inputValue(widthAttr).asString().asChar(); // Step 1: Get the input values
 	std::string Rheight = data.inputValue(heightAttr).asString().asChar();
 	std::string Rdepth = data.inputValue(depthAttr).asString().asChar();
+	int wallType = data.inputValue(wallTypeAttr).asShort();
 
 	double width = imprLib::strFtIn(Rwidth).Ft * 12 + imprLib::strFtIn(Rwidth).Inch; // Step 2: Convert the input values to inches
 	MGlobal::displayInfo(std::format("Width: {}", width).c_str());
@@ -160,6 +169,15 @@ MStatus ArchiWallNode::compute(const MPlug& plug, MDataBlock& data) {
 	return MS::kSuccess;
 }
 
+MSyntax WallCreateCmd::newSyntax() {
+	MSyntax syntax;
+	syntax.addFlag("-w", "-width", MSyntax::kString);
+	syntax.addFlag("-h", "-height", MSyntax::kString);
+	syntax.addFlag("-d", "-depth", MSyntax::kString);
+	syntax.addFlag("-wt", "-wallType", MSyntax::kLong);
+	return syntax;
+}
+
 MStatus WallCreateCmd::doIt(const MArgList& args) {
 	MStatus status;
 
@@ -168,15 +186,41 @@ MStatus WallCreateCmd::doIt(const MArgList& args) {
 	MFnDependencyNode fn; // Creating the construction history node
 	MObject wallNodeObj = fn.create(ArchiWallNode::id, "ArchiWallNode", &status); CHECK_MSTATUS_AND_RETURN_IT(status);
 
+	MArgDatabase argData(WallCreateCmd::newSyntax(), args, &status);
+	CHECK_MSTATUS_AND_RETURN_IT(status);
+
+	MString width = "15'0\"";
+	MString height = "10'0\"";
+	MString depth = "0'4.75\"";
+	int wallTypeInt = 0;
+
+	if (argData.isFlagSet("-w")) {
+		argData.getFlagArgument("-w", 0, width);
+	}
+	if (argData.isFlagSet("-h")) {
+		argData.getFlagArgument("-h", 0, height);
+	}
+	if (argData.isFlagSet("-d")) {
+		argData.getFlagArgument("-d", 0, depth);
+	}
+	if (argData.isFlagSet("-wt")) {
+		argData.getFlagArgument("-wt", 0, wallTypeInt);
+	}
+
+	MGlobal::displayInfo("Wall type selected: " + MString() + wallTypeInt);
+
 	MPlug widthPlug = fn.findPlug("width", true);
-	widthPlug.setString("2'0\"");
+	widthPlug.setString(width);
 
 	MPlug heightPlug = fn.findPlug("height", true);
-	heightPlug.setString("2'0\"");
+	heightPlug.setString(height);
 
 	MPlug depthPlug = fn.findPlug("depth", true);
-	depthPlug.setString("2'0\"");
+	depthPlug.setString(depth);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
+
+	MPlug wallTypePlug = fn.findPlug("wallType", true);
+	wallTypePlug.setInt(wallTypeInt);
 
 	MFnTransform transformFn; // Creating the transform node
 	MObject transformObj = transformFn.create(MObject::kNullObj, &status);

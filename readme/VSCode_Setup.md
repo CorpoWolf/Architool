@@ -7,7 +7,8 @@
     {
       "name": "Architools",
       "includePath": [
-        "${workspaceFolder}/**"
+        "${workspaceFolder}/**",
+        "C:/Users/<user>/devkitBase/include/**"
       ],
       "defines": [],
       "cStandard": "c11",

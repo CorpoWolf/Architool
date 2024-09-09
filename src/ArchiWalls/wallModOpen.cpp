@@ -9,6 +9,12 @@
 #include <maya/MFnTypedAttribute.h>
 #include <maya/MPointArray.h>
 #include <maya/MFnMeshData.h>
+#include <maya/MFnDependencyNode.h>
+#include <maya/MPlug.h>
+#include <maya/MDataHandle.h>
+#include <maya/MFnMeshData.h>
+#include <maya/MSelectionList.h>
+#include <maya/MArgList.h>
 
 #include "./wallModOpen.hpp"
 
@@ -31,7 +37,7 @@ MStatus ArchiWallOpenNode::initialize() {
 
 	inputMeshAttr = tAttr.create("inputMesh", "inMesh", MFnData::kMesh);
 	tAttr.setStorable(false);
-	tAttr.setWritable(false);
+	tAttr.setWritable(true);
 	addAttribute(inputMeshAttr);
 
 	outputMeshAttr = tAttr.create("outputMesh", "outMesh", MFnData::kMesh);
@@ -41,6 +47,7 @@ MStatus ArchiWallOpenNode::initialize() {
 
 	attributeAffects(widthAttr, outputMeshAttr);
 	attributeAffects(heightAttr, outputMeshAttr);
+	attributeAffects(inputMeshAttr, outputMeshAttr);
 
 	return MS::kSuccess;
 }
@@ -50,6 +57,8 @@ MStatus ArchiWallOpenNode::compute(const MPlug& plug, MDataBlock& data) {
 		return MS::kUnknownParameter;
 	}
 
+	MGlobal::displayInfo("WallModOpen compute executed");
+
 	MStatus status;
 	MDataHandle inputMeshHandle = data.inputValue(inputMeshAttr);
 	MObject inMesh = inputMeshHandle.asMesh();
@@ -57,16 +66,6 @@ MStatus ArchiWallOpenNode::compute(const MPlug& plug, MDataBlock& data) {
 	MFnMesh meshFn(inMesh);
 	MPointArray points;
 	meshFn.getPoints(points);
-
-	// MObject newMesh = meshFn.create( // Going to need verification - placeholder for now
-	// 	points.length(),
-	// 	faceCounts.length(),
-	// 	points,
-	// 	faceCounts,
-	// 	faceConnects,
-	// 	wallMeshData,
-	// 	&status
-	// );
 
 	MDataHandle outputHandle = data.outputValue(outputMeshAttr);
 	MFnMeshData dataCreator;
@@ -77,6 +76,50 @@ MStatus ArchiWallOpenNode::compute(const MPlug& plug, MDataBlock& data) {
 
 MStatus WallModOpenCmd::doIt(const MArgList& args) {
 	MGlobal::displayInfo("WallModOpen command executed");
+
+	MStatus status;
+	MSelectionList selection;
+	MGlobal::getActiveSelectionList(selection);
+
+	if (selection.length() != 1) {
+		MGlobal::displayError("Please select one mesh object");
+		return MS::kFailure;
+	}
+
+	auto getShapeNodeFromTransform = [](MObject& transformObj, MStatus& status) -> MObject {
+		MFnDagNode dagNodeFn(transformObj, &status);
+		for (unsigned int i = 0; i < dagNodeFn.childCount(); i++) {
+			MObject child = dagNodeFn.child(i, &status);
+			if (child.hasFn(MFn::kMesh)) {
+				return child;
+			}
+		}
+		return MObject::kNullObj;
+	};
+
+	MObject inputTransformObj;
+	status = selection.getDependNode(0, inputTransformObj);
+	if (status != MS::kSuccess || !inputTransformObj.hasFn(MFn::kTransform)) {
+		MGlobal::displayError("Failed to get the selected object");
+		return MS::kFailure;
+	}
+
+	MFnDependencyNode fn; // Creating the construction history node
+	MObject wallNodeObj = fn.create(ArchiWallOpenNode::id, "ArchiWallOpenNode", &status); CHECK_MSTATUS_AND_RETURN_IT(status);
+	MPlug inputMeshPlug = fn.findPlug("inMesh", &status); CHECK_MSTATUS_AND_RETURN_IT(status);
+
+	MObject inputMeshObj = getShapeNodeFromTransform(inputTransformObj, status);
+	if (status != MS::kSuccess) {
+		MGlobal::displayError("Failed to get the shape node from the selected object");
+		return MS::kFailure;
+	}
+
+	MFnDagNode meshDagNode(inputMeshObj, &status); CHECK_MSTATUS_AND_RETURN_IT(status);
+	MPlug outMeshPlug = meshDagNode.findPlug("outMesh", &status); CHECK_MSTATUS_AND_RETURN_IT(status);
+	MDGModifier dgMod;
+	dgMod.connect(outMeshPlug, inputMeshPlug); CHECK_MSTATUS_AND_RETURN_IT(status);
+	
+	status = dgMod.doIt(); CHECK_MSTATUS_AND_RETURN_IT(status);
 
 	return MS::kSuccess;
 }

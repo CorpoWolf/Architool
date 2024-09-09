@@ -2,7 +2,7 @@
 #include <vector>
 #include <sstream>
 #include <cctype>
-#include "imprString.h"
+#include "imprString.hpp"
 
 namespace imprLib {
 	const std::string delimiters[] = {"ft", "'", "in", "\""};

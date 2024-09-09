@@ -1,4 +1,4 @@
-#include "imprMath.h"
+#include "imprMath.hpp"
 
 namespace imprLib {
 

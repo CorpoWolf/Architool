@@ -18,8 +18,8 @@
 #include <format>
 
 #include "./wallGen.hpp"
-#include "../imprLib/imprMath.h"
-#include "../imprLib/imprString.h"
+#include "../imprLib/imprMath.hpp"
+#include "../imprLib/imprString.hpp"
 
 MTypeId ArchiWallNode::id(0x13001);
 MObject ArchiWallNode::widthAttr;
@@ -101,11 +101,16 @@ MStatus ArchiWallNode::compute(const MPlug& plug, MDataBlock& data) {
 
 	MIntArray faceCounts;
 	MIntArray faceConnects;
-	faceCounts.append(4); // Front face
-	faceConnects.append(4);
+	faceCounts.append(4); // Bottom face
+	faceConnects.append(0);
+	faceConnects.append(1);
 	faceConnects.append(5);
-	faceConnects.append(6);
+	faceConnects.append(4);
+	faceCounts.append(4); // Top face
 	faceConnects.append(7);
+	faceConnects.append(6);
+	faceConnects.append(2);
+	faceConnects.append(3);
 	faceCounts.append(4); // Back face
 	faceConnects.append(1);
 	faceConnects.append(0);
@@ -116,21 +121,16 @@ MStatus ArchiWallNode::compute(const MPlug& plug, MDataBlock& data) {
 	faceConnects.append(4);
 	faceConnects.append(7);
 	faceConnects.append(3);
+	faceCounts.append(4); // Front face
+	faceConnects.append(4);
+	faceConnects.append(5);
+	faceConnects.append(6);
+	faceConnects.append(7);
 	faceCounts.append(4); // Right face
 	faceConnects.append(5);
 	faceConnects.append(1);
 	faceConnects.append(2);
 	faceConnects.append(6);
-	faceCounts.append(4); // Top face
-	faceConnects.append(7);
-	faceConnects.append(6);
-	faceConnects.append(2);
-	faceConnects.append(3);
-	faceCounts.append(4); // Bottom face
-	faceConnects.append(0);
-	faceConnects.append(1);
-	faceConnects.append(5);
-	faceConnects.append(4);
 
 	MFnMesh meshFn; // Create a new MFnMesh object that stores the mesh data but does not create the mesh
 	MObject newMesh = meshFn.create(

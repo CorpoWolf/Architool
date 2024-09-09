@@ -10,7 +10,7 @@
 #include <maya/MPointArray.h>
 #include <maya/MFnMeshData.h>
 
-#include "./wallModOpen.h"
+#include "./wallModOpen.hpp"
 
 MTypeId ArchiWallOpenNode::id(0x13002);
 MObject ArchiWallOpenNode::widthAttr;

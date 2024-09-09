@@ -17,7 +17,7 @@
 #include <vector>
 #include <format>
 
-#include "./wallGen.h"
+#include "./wallGen.hpp"
 #include "../imprLib/imprMath.h"
 #include "../imprLib/imprString.h"
 

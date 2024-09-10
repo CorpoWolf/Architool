@@ -1,18 +1,4 @@
-#include <maya/MGlobal.h>
-#include <maya/MFnMesh.h>
-#include <maya/MFloatPointArray.h>
-#include <maya/MIntArray.h>
-#include <maya/MObject.h>
-#include <maya/MFnDagNode.h>
-#include <maya/MFnTransform.h>
-#include <maya/MSelectionList.h>
-#include <maya/MFnSet.h>
-#include <maya/MItSelectionList.h>
-#include <maya/MFnDependencyNode.h>
-#include <maya/MPxCommand.h>
-#include <maya/MPxNode.h>
-#include <maya/MPointArray.h>
-#include <maya/MFnMeshData.h>
+#include "common.hpp"
 
 #include <vector>
 #include <format>

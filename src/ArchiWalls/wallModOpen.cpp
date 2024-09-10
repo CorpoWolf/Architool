@@ -1,24 +1,5 @@
-#include <maya/MPxCommand.h>
-#include <maya/MPxNode.h>
-#include <maya/MGlobal.h>
-#include <maya/MFnMesh.h>
-#include <maya/MFloatPointArray.h>
-#include <maya/MFloatVectorArray.h>
-#include <maya/MIntArray.h>
-#include <maya/MObject.h>
-#include <maya/MFnDagNode.h>
-#include <maya/MFnTypedAttribute.h>
-#include <maya/MPointArray.h>
-#include <maya/MFnMeshData.h>
-#include <maya/MFnDependencyNode.h>
-#include <maya/MPlug.h>
-#include <maya/MDataHandle.h>
-#include <maya/MFnMeshData.h>
-#include <maya/MSelectionList.h>
-#include <maya/MArgList.h>
-
-#include "./wallModOpen.hpp"
 #include "common.hpp"
+#include "./wallModOpen.hpp"
 
 MTypeId ArchiWallOpenNode::id(0x13002);
 MObject ArchiWallOpenNode::widthAttr;
@@ -32,7 +13,7 @@ MStatus ArchiWallOpenNode::initialize() {
 	widthAttr = tAttr.create("width", "w", MFnData::kString);
 	tAttr.setKeyable(true);
 	addAttribute(widthAttr);
-
+	
 	heightAttr = tAttr.create("height", "h", MFnData::kString);
 	tAttr.setKeyable(true);
 	addAttribute(heightAttr);

@@ -109,8 +109,7 @@ MStatus WallModOpenCmd::doIt(const MArgList& args) {
 	MStatus status;
 	MGlobal::displayInfo("WallModOpen command executed");
 
-	MSelectionList selList;
-	MGlobal::getActiveSelectionList(selList);
+	MSelectionList selList = MGlobal::getActiveSelectionList(selList);
 
 	if (selList.length() != 1) {
 		MGlobal::displayError("Select one mesh object");

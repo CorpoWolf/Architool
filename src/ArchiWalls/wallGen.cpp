@@ -120,12 +120,12 @@ MStatus ArchiWallNode::compute(const MPlug& plug, MDataBlock& data) {
 
 	MFnMesh meshFn; // Create a new MFnMesh object that stores the mesh data but does not create the mesh
 	MObject newMesh = meshFn.create(
-		points.length(), 
-		faceCounts.length(), 
-		points, 
-		faceCounts, 
-		faceConnects, 
-		wallMeshData, 
+		points.length(),
+		faceCounts.length(),
+		points,
+		faceCounts,
+		faceConnects,
+		wallMeshData,
 		&status
 	);
 	if (status != MS::kSuccess || newMesh.isNull()) {
@@ -143,7 +143,7 @@ MStatus ArchiWallNode::compute(const MPlug& plug, MDataBlock& data) {
 	}
 	meshFn.updateSurface(); // Apply changes to mesh surface
 
-	MDataHandle outputHandle = data.outputValue(outputMeshAttr); 
+	MDataHandle outputHandle = data.outputValue(outputMeshAttr);
 	if (wallMeshData.isNull()) {
 		MGlobal::displayError("wallMeshData is null before setting output.");
 		return MS::kFailure;
@@ -166,19 +166,17 @@ MSyntax WallCreateCmd::newSyntax() {
 
 MStatus WallCreateCmd::doIt(const MArgList& args) {
 	MStatus status;
-
-	MGlobal::displayInfo("Running Wall Node doIt method");
-
-	MFnDependencyNode fn; // Creating the construction history node
-	MObject wallNodeObj = fn.create(ArchiWallNode::id, "ArchiWallNode", &status); CHECK_MSTATUS_AND_RETURN_IT(status);
-
-	MArgDatabase argData(WallCreateCmd::newSyntax(), args, &status);
-	CHECK_MSTATUS_AND_RETURN_IT(status);
+	MFnDependencyNode fn;
 
 	MString width = "15'0\"";
 	MString height = "10'0\"";
 	MString depth = "0'4.75\"";
 	int wallTypeInt = 0;
+	
+	MObject wallNodeObj = fn.create(ArchiWallNode::id, "ArchiWallNode", &status);
+	mErr(status);
+	MArgDatabase argData(WallCreateCmd::newSyntax(), args, &status);
+	mErr(status);
 
 	if (argData.isFlagSet("-w")) {
 		argData.getFlagArgument("-w", 0, width);
@@ -193,8 +191,6 @@ MStatus WallCreateCmd::doIt(const MArgList& args) {
 		argData.getFlagArgument("-wt", 0, wallTypeInt);
 	}
 
-	MGlobal::displayInfo("Wall type selected: " + MString() + wallTypeInt);
-
 	MPlug widthPlug = fn.findPlug("width", true);
 	widthPlug.setString(width);
 
@@ -202,25 +198,21 @@ MStatus WallCreateCmd::doIt(const MArgList& args) {
 	heightPlug.setString(height);
 
 	MPlug depthPlug = fn.findPlug("depth", true);
-	depthPlug.setString(depth);
-	CHECK_MSTATUS_AND_RETURN_IT(status);
+	depthPlug.setString(depth); mErr(status);
 
 	MPlug wallTypePlug = fn.findPlug("wallType", true);
 	wallTypePlug.setInt(wallTypeInt);
 
 	MFnTransform transformFn; // Creating the transform node
-	MObject transformObj = transformFn.create(MObject::kNullObj, &status);
-	CHECK_MSTATUS_AND_RETURN_IT(status);
+	MObject transformObj = transformFn.create(MObject::kNullObj, &status); mErr(status);
 	transformFn.setName("ArchiWall");
 
 	MFnDagNode dagNodeFn; // Creating the shape node
 	MObject shapeObj = dagNodeFn.create("mesh", transformObj, &status);
-	dagNodeFn.setName("ArchiWallShape");
-	CHECK_MSTATUS_AND_RETURN_IT(status);
+	dagNodeFn.setName("ArchiWallShape"); mErr(status);
 
 	MFnDependencyNode shapeFn(shapeObj); // Connect the output mesh of WallNode to the input of the shape node
-	MPlug inMeshPlug = shapeFn.findPlug("inMesh", true, &status);
-	CHECK_MSTATUS_AND_RETURN_IT(status);
+	MPlug inMeshPlug = shapeFn.findPlug("inMesh", true, &status); mErr(status);
 
 	MPlug outputMeshPlug = fn.findPlug("outputMesh", true, &status); // Runs the compute method
 	if (!status) {
@@ -231,7 +223,7 @@ MStatus WallCreateCmd::doIt(const MArgList& args) {
 	MDGModifier dgModifier;
 	dgModifier.connect(outputMeshPlug, inMeshPlug);
 	CHECK_MSTATUS_AND_RETURN_IT(dgModifier.doIt());
-	
+
 	MObject outputMeshObj;
 	status = outputMeshPlug.getValue(outputMeshObj); // Delivers the output of the compute method
 	if (!status) {
@@ -244,11 +236,8 @@ MStatus WallCreateCmd::doIt(const MArgList& args) {
 	MObject shadingGroupObj;
 	selList.getDependNode(0, shadingGroupObj);
 
-	MFnSet shadingGroup(shadingGroupObj, &status);
-	CHECK_MSTATUS_AND_RETURN_IT(status);
-
-	status = shadingGroup.addMember(shapeObj);  // Add the shape node to the initialShadingGroup
-	CHECK_MSTATUS_AND_RETURN_IT(status);
+	MFnSet shadingGroup(shadingGroupObj, &status); mErr(status);
+	status = shadingGroup.addMember(shapeObj); mErr(status);  // Add the shape node to the initialShadingGroup
 
 	MGlobal::displayInfo("Wall node created, mesh generated, and assigned to shading group!");
 	return MS::kSuccess;

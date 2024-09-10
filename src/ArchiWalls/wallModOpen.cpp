@@ -18,6 +18,7 @@
 #include <maya/MArgList.h>
 
 #include "./wallModOpen.hpp"
+#include "common.hpp"
 
 MTypeId ArchiWallOpenNode::id(0x13002);
 MObject ArchiWallOpenNode::widthAttr;
@@ -44,7 +45,7 @@ MStatus ArchiWallOpenNode::initialize() {
 	outputMeshAttr = tAttr.create("outputMesh", "outMesh", MFnData::kMesh);
 	tAttr.setStorable(false);
 	tAttr.setWritable(true);
-	tAttr.setReadable(true); // Needed for mesh recursion computation with other nodes
+	tAttr.setReadable(true); // Make the output attribute readable for node input and output.
 	addAttribute(outputMeshAttr);
 
 	attributeAffects(widthAttr, outputMeshAttr);
@@ -85,7 +86,7 @@ MStatus ArchiWallOpenNode::compute(const MPlug& plug, MDataBlock& data) {
 
 	MDataHandle outputHandle = data.outputValue(outputMeshAttr);
 	MFnMeshData dataCreator;
-	MObject outMesh = dataCreator.create(&status); CHECK_MSTATUS_AND_RETURN_IT(status);
+	MObject outMesh = dataCreator.create(&status); mErr(status);
 
 	MFnMesh newMeshFn;
 	newMeshFn.create(
@@ -96,7 +97,7 @@ MStatus ArchiWallOpenNode::compute(const MPlug& plug, MDataBlock& data) {
 		faceConnects,
 		outMesh,
 		&status
-	); CHECK_MSTATUS_AND_RETURN_IT(status);
+	); mErr(status);
 
 	newMeshFn.updateSurface(); // Update the mesh to reflect the changes
 
@@ -105,14 +106,14 @@ MStatus ArchiWallOpenNode::compute(const MPlug& plug, MDataBlock& data) {
 
 	for (unsigned int polyIdx = 0; polyIdx < faceCounts.length(); polyIdx++) { // Retrieve the normals for this polygon
 		status = meshFn.getFaceVertexNormals(polyIdx, floatNormals, MSpace::kObject); // Get per-vertex per-polygon normals
-		CHECK_MSTATUS_AND_RETURN_IT(status);
+		mErr(status);
 
 		// Set the normals for each vertex in this polygon
 		for (unsigned int vertexIdx = 0; vertexIdx < faceCounts[polyIdx]; vertexIdx++) {
 			int faceVertexIdx = faceConnects[vertexIndexOffset + vertexIdx];
 			MVector normal(floatNormals[vertexIdx]);  // Convert MFloatVector to MVector
 			status = newMeshFn.setFaceVertexNormal(normal, polyIdx, faceVertexIdx, MSpace::kObject);
-			CHECK_MSTATUS_AND_RETURN_IT(status);
+			mErr(status);
 		}
 		vertexIndexOffset += faceCounts[polyIdx];
 	}
@@ -143,10 +144,10 @@ MStatus WallModOpenCmd::doIt(const MArgList& args) {
 	}
 
 	MObject shapeNodeObj;
-	MFnDagNode transformDagNode(inputTransfromObj, &status); CHECK_MSTATUS_AND_RETURN_IT(status);
+	MFnDagNode transformDagNode(inputTransfromObj, &status); mErr(status);
 
 	for (unsigned int i = 0; i < transformDagNode.childCount(); i++) {
-		MObject childObj = transformDagNode.child(i, &status); CHECK_MSTATUS_AND_RETURN_IT(status);
+		MObject childObj = transformDagNode.child(i, &status); mErr(status);
 		if (childObj.hasFn(MFn::kMesh)) {
 			shapeNodeObj = childObj;
 			break;
@@ -158,48 +159,47 @@ MStatus WallModOpenCmd::doIt(const MArgList& args) {
 		return MS::kFailure;
 	}
 
-	MPlug inMeshPlug = MFnDagNode(shapeNodeObj).findPlug("inMesh", &status); CHECK_MSTATUS_AND_RETURN_IT(status);
+	MPlug inMeshPlug = MFnDagNode(shapeNodeObj).findPlug("inMesh", &status); mErr(status);
 
 	MPlugArray plugArray;
-	inMeshPlug.connectedTo(plugArray, true, false, &status); CHECK_MSTATUS_AND_RETURN_IT(status);
+	inMeshPlug.connectedTo(plugArray, true, false, &status); mErr(status);
 
 	if (plugArray.length() == 0) {
 		MGlobal::displayError("No connection found");
 		return MS::kFailure;
 	}
 
-	MObject constructionNode = plugArray[0].node(&status); CHECK_MSTATUS_AND_RETURN_IT(status);
+	MObject constructionNode = plugArray[0].node(&status); mErr(status);
 	if (constructionNode.isNull()) {
 		MGlobal::displayError("Failed to get construction node");
 		return MS::kFailure;
 	}
 
 	MFnDependencyNode fn;
-	MObject wallNodeOpenMod = fn.create(ArchiWallOpenNode::id, "ArchiWallOpenNode", &status); CHECK_MSTATUS_AND_RETURN_IT(status);
+	MObject wallNodeOpenMod = fn.create(ArchiWallOpenNode::id, "ArchiWallOpenNode", &status); mErr(status);
 
-	MFnDependencyNode constructionNodeFn(constructionNode, &status); CHECK_MSTATUS_AND_RETURN_IT(status);
-	MPlug constructionOutPlug = constructionNodeFn.findPlug("outputMesh", &status); CHECK_MSTATUS_AND_RETURN_IT(status);
-	MPlug customInMeshPlug = fn.findPlug("inMesh", &status); CHECK_MSTATUS_AND_RETURN_IT(status);
+	MFnDependencyNode constructionNodeFn(constructionNode, &status); mErr(status);
+	MPlug constructionOutPlug = constructionNodeFn.findPlug("outputMesh", &status); mErr(status);
+	MPlug customInMeshPlug = fn.findPlug("inMesh", &status); mErr(status);
 
 	MDGModifier dgMod;
-	dgMod.connect(constructionOutPlug, customInMeshPlug); CHECK_MSTATUS_AND_RETURN_IT(status);
-
+	dgMod.connect(constructionOutPlug, customInMeshPlug); mErr(status);
 	// New Step 7
 	if (inMeshPlug.isConnected()) {
 		MPlugArray connectedPlugs;
-		inMeshPlug.connectedTo(connectedPlugs, true, false, &status); CHECK_MSTATUS_AND_RETURN_IT(status);
+		inMeshPlug.connectedTo(connectedPlugs, true, false, &status); mErr(status);
 
 		if (connectedPlugs.length() > 0) {
-			dgMod.disconnect(connectedPlugs[0], inMeshPlug); CHECK_MSTATUS_AND_RETURN_IT(status);
+			dgMod.disconnect(connectedPlugs[0], inMeshPlug); mErr(status);
 		}
 	}
 
 	inMeshPlug.setLocked(false);  // Unlock the inMesh attribute to make it writable, if it's locked
 
-	MPlug customOutMeshPlug = fn.findPlug("outMesh", &status); CHECK_MSTATUS_AND_RETURN_IT(status);
-	dgMod.connect(customOutMeshPlug, inMeshPlug); CHECK_MSTATUS_AND_RETURN_IT(status);
+	MPlug customOutMeshPlug = fn.findPlug("outMesh", &status); mErr(status);
+	dgMod.connect(customOutMeshPlug, inMeshPlug); mErr(status);
 
-	status = dgMod.doIt(); CHECK_MSTATUS_AND_RETURN_IT(status);
+	status = dgMod.doIt(); mErr(status);
 
 	return MS::kSuccess;
 }

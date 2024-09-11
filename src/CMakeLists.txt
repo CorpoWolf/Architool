@@ -18,6 +18,7 @@ set(SOURCE_FILES
 	./ArchiWalls/wallModOpen.cpp
 	./imprLib/imprMath.cpp
 	./imprLib/imprString.cpp
+	./utils/utils.cpp
 )
 
 include_directories(

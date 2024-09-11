@@ -2,10 +2,12 @@
 
 #include <vector>
 #include <format>
+#include <cstdint>
 
 #include "./wallGen.hpp"
 #include "../imprLib/imprMath.hpp"
 #include "../imprLib/imprString.hpp"
+#include "../utils/utils.hpp"
 
 MTypeId ArchiWallNode::id(0x13001);
 MObject ArchiWallNode::widthAttr;
@@ -171,25 +173,29 @@ MStatus WallCreateCmd::doIt(const MArgList& args) {
 	MString width = "15'0\"";
 	MString height = "10'0\"";
 	MString depth = "0'4.75\"";
-	int wallTypeInt = 0;
+	uint32_t wallTypeInt = 0;
 	
 	MObject wallNodeObj = fn.create(ArchiWallNode::id, "ArchiWallNode", &status);
 	mErr(status);
 	MArgDatabase argData(WallCreateCmd::newSyntax(), args, &status);
 	mErr(status);
 
-	if (argData.isFlagSet("-w")) {
-		argData.getFlagArgument("-w", 0, width);
-	}
-	if (argData.isFlagSet("-h")) {
-		argData.getFlagArgument("-h", 0, height);
-	}
-	if (argData.isFlagSet("-d")) {
-		argData.getFlagArgument("-d", 0, depth);
-	}
-	if (argData.isFlagSet("-wt")) {
-		argData.getFlagArgument("-wt", 0, wallTypeInt);
-	}
+	archCmdFlag(argData, "-w", width);
+	archCmdFlag(argData, "-h", height);
+	archCmdFlag(argData, "-d", depth);
+	archCmdFlag(argData, "-wt", wallTypeInt);
+	// if (argData.isFlagSet("-w")) {
+	// 	argData.getFlagArgument("-w", 0, width);
+	// }
+	// if (argData.isFlagSet("-h")) {
+	// 	argData.getFlagArgument("-h", 0, height);
+	// }
+	// if (argData.isFlagSet("-d")) {
+	// 	argData.getFlagArgument("-d", 0, depth);
+	// }
+	// if (argData.isFlagSet("-wt")) {
+	// 	argData.getFlagArgument("-wt", 0, wallTypeInt);
+	// }
 
 	MPlug widthPlug = fn.findPlug("width", true);
 	widthPlug.setString(width);

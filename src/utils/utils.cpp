@@ -5,6 +5,7 @@
 #include <maya/MString.h>
 #include <maya/MStatus.h>
 #include <maya/MGlobal.h>
+#include <maya/MPlug.h>
 
 template <typename T>
 void cmdFlag(MArgDatabase& argData, const char* flag, T& arg) {
@@ -15,10 +16,12 @@ void cmdFlag(MArgDatabase& argData, const char* flag, T& arg) {
 }
 
 // MSelectionList can have mutliple various data types
-void archCmdFlag(MArgDatabase& argData, const char* flag, MString& arg) {
+void archiCmdFlag(MArgDatabase& argData, const char* flag, MString& arg, MPlug& plug) {
 	cmdFlag(argData, flag, arg);
+	plug.setString(arg);
 }
 
-void archCmdFlag(MArgDatabase& argData, const char* flag, uint32_t& arg) {
+void archiCmdFlag(MArgDatabase& argData, const char* flag, uint32_t& arg, MPlug& plug) {
 	cmdFlag(argData, flag, arg);
+	plug.setInt(arg);
 }

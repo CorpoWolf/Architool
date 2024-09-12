@@ -60,7 +60,6 @@ MStatus ArchiWallOpenNode::compute(const MPlug& plug, MDataBlock& data) {
 	MIntArray faceConnects;
 	meshFn.getVertices(faceCounts, faceConnects);
 
-	// testing for output mesh modification
 	for (unsigned int i = 0; i < vertices.length(); i++) {
 		vertices[i].y += 1.0f;
 	}
@@ -71,8 +70,8 @@ MStatus ArchiWallOpenNode::compute(const MPlug& plug, MDataBlock& data) {
 
 	MFnMesh newMeshFn;
 	newMeshFn.create(
-		vertices.length(), 
-		faceCounts.length(), 
+		vertices.length(),
+		faceCounts.length(),
 		vertices,
 		faceCounts,
 		faceConnects,

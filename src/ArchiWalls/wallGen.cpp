@@ -170,44 +170,20 @@ MStatus WallCreateCmd::doIt(const MArgList& args) {
 	MStatus status;
 	MFnDependencyNode fn;
 
-	MString width = "15'0\"";
-	MString height = "10'0\"";
-	MString depth = "0'4.75\"";
-	uint32_t wallTypeInt = 0;
+	MObject wallNodeObj = fn.create(ArchiWallNode::id, "ArchiWallNode", &status); mErr(status);
+	MArgDatabase argData(WallCreateCmd::newSyntax(), args, &status); mErr(status);
 	
-	MObject wallNodeObj = fn.create(ArchiWallNode::id, "ArchiWallNode", &status);
-	mErr(status);
-	MArgDatabase argData(WallCreateCmd::newSyntax(), args, &status);
-	mErr(status);
-
-	archCmdFlag(argData, "-w", width);
-	archCmdFlag(argData, "-h", height);
-	archCmdFlag(argData, "-d", depth);
-	archCmdFlag(argData, "-wt", wallTypeInt);
-	// if (argData.isFlagSet("-w")) {
-	// 	argData.getFlagArgument("-w", 0, width);
-	// }
-	// if (argData.isFlagSet("-h")) {
-	// 	argData.getFlagArgument("-h", 0, height);
-	// }
-	// if (argData.isFlagSet("-d")) {
-	// 	argData.getFlagArgument("-d", 0, depth);
-	// }
-	// if (argData.isFlagSet("-wt")) {
-	// 	argData.getFlagArgument("-wt", 0, wallTypeInt);
-	// }
-
+	std::vector<MString> defaultSize = { "15'0\"", "10'0\"", "0'4.75\"" };
+	uint32_t defaultOpt = 0;
 	MPlug widthPlug = fn.findPlug("width", true);
-	widthPlug.setString(width);
-
-	MPlug heightPlug = fn.findPlug("height", true);
-	heightPlug.setString(height);
-
 	MPlug depthPlug = fn.findPlug("depth", true);
-	depthPlug.setString(depth); mErr(status);
-
+	MPlug heightPlug = fn.findPlug("height", true);
 	MPlug wallTypePlug = fn.findPlug("wallType", true);
-	wallTypePlug.setInt(wallTypeInt);
+
+	archiCmdFlag(argData, "-w", defaultSize[0], widthPlug);
+	archiCmdFlag(argData, "-h", defaultSize[1], depthPlug);
+	archiCmdFlag(argData, "-d", defaultSize[2], heightPlug);
+	archiCmdFlag(argData, "-wt", defaultOpt, wallTypePlug);
 
 	MFnTransform transformFn; // Creating the transform node
 	MObject transformObj = transformFn.create(MObject::kNullObj, &status); mErr(status);

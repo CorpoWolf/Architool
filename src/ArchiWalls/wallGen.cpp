@@ -71,7 +71,6 @@ MStatus ArchiWallNode::compute(const MPlug& plug, MDataBlock& data) {
 	double height = imprLib::strFtIn(Rheight).Ft * 12 + imprLib::strFtIn(Rheight).Inch;
 	MGlobal::displayInfo(std::format("Height: {}", height).c_str());
 	double depth = imprLib::strFtIn(Rdepth).Ft * 12 + imprLib::strFtIn(Rdepth).Inch;
-	MGlobal::displayInfo(std::format("Depth: {}", depth).c_str());
 
 	MFnMeshData meshDataFn;
 	MObject wallMeshData = meshDataFn.create(&status);
@@ -180,12 +179,12 @@ MStatus WallCreateCmd::doIt(const MArgList& args) {
 	MPlug heightPlug = fn.findPlug("height", true);
 	MPlug wallTypePlug = fn.findPlug("wallType", true);
 
-	archiCmdFlag(argData, "-w", defaultSize[0], widthPlug);
-	archiCmdFlag(argData, "-h", defaultSize[1], depthPlug);
-	archiCmdFlag(argData, "-d", defaultSize[2], heightPlug);
-	archiCmdFlag(argData, "-wt", defaultOpt, wallTypePlug);
+	archiUtil::archiCmdFlag(argData, "-w", defaultSize[0], widthPlug);
+	archiUtil::archiCmdFlag(argData, "-h", defaultSize[1], depthPlug);
+	archiUtil::archiCmdFlag(argData, "-d", defaultSize[2], heightPlug);
+	archiUtil::archiCmdFlag(argData, "-wt", defaultOpt, wallTypePlug);
 
-	MFnTransform transformFn; // Creating the transform node
+	MFnTransform transformFn;
 	MObject transformObj = transformFn.create(MObject::kNullObj, &status); mErr(status);
 	transformFn.setName("ArchiWall");
 

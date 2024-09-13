@@ -179,10 +179,10 @@ MStatus WallCreateCmd::doIt(const MArgList& args) {
 	MPlug heightPlug = fn.findPlug("height", true);
 	MPlug wallTypePlug = fn.findPlug("wallType", true);
 
-	archiUtil::archiCmdFlag(argData, "-w", defaultSize[0], widthPlug);
-	archiUtil::archiCmdFlag(argData, "-h", defaultSize[1], depthPlug);
-	archiUtil::archiCmdFlag(argData, "-d", defaultSize[2], heightPlug);
-	archiUtil::archiCmdFlag(argData, "-wt", defaultOpt, wallTypePlug);
+	archiUtil::CmdFlag(argData, "-w", defaultSize[0], widthPlug);
+	archiUtil::CmdFlag(argData, "-h", defaultSize[1], depthPlug);
+	archiUtil::CmdFlag(argData, "-d", defaultSize[2], heightPlug);
+	archiUtil::CmdFlag(argData, "-wt", defaultOpt, wallTypePlug);
 
 	MFnTransform transformFn;
 	MObject transformObj = transformFn.create(MObject::kNullObj, &status); mErr(status);

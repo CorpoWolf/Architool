@@ -16,7 +16,6 @@ namespace archiUtil {
 		}
 	}
 
-	// MSelectionList can have mutliple various data types
 	void CmdFlag(MArgDatabase& argData, const char* flag, MString& arg, MPlug& plug) {
 		cmdFlagTMP(argData, flag, arg);
 		plug.setString(arg);

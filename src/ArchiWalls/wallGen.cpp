@@ -172,16 +172,16 @@ MStatus WallCreateCmd::doIt(const MArgList& args) {
 	MObject wallNodeObj = fn.create(ArchiWallNode::id, "ArchiWallNode", &status); mErr(status);
 	MArgDatabase argData(WallCreateCmd::newSyntax(), args, &status); mErr(status);
 	
-	std::vector<MString> defaultSize = { "15'0\"", "10'0\"", "0'4.75\"" };
-	uint32_t defaultOpt = 0;
+	std::vector<MString> defaultSize = { "20'0\"", "10'0\"", "0'4.75\"" };
+	uint32_t defaultOpt = 0; 
 	MPlug widthPlug = fn.findPlug("width", true);
-	MPlug depthPlug = fn.findPlug("depth", true);
 	MPlug heightPlug = fn.findPlug("height", true);
+	MPlug depthPlug = fn.findPlug("depth", true);
 	MPlug wallTypePlug = fn.findPlug("wallType", true);
 
 	archiUtil::CmdFlag(argData, "-w", defaultSize[0], widthPlug);
-	archiUtil::CmdFlag(argData, "-h", defaultSize[1], depthPlug);
-	archiUtil::CmdFlag(argData, "-d", defaultSize[2], heightPlug);
+	archiUtil::CmdFlag(argData, "-h", defaultSize[1], heightPlug);
+	archiUtil::CmdFlag(argData, "-d", defaultSize[2], depthPlug);
 	archiUtil::CmdFlag(argData, "-wt", defaultOpt, wallTypePlug);
 
 	MFnTransform transformFn;
@@ -218,7 +218,7 @@ MStatus WallCreateCmd::doIt(const MArgList& args) {
 	selList.getDependNode(0, shadingGroupObj);
 
 	MFnSet shadingGroup(shadingGroupObj, &status); mErr(status);
-	status = shadingGroup.addMember(shapeObj); mErr(status);  // Add the shape node to the initialShadingGroup
+	status = shadingGroup.addMember(shapeObj); mErr(status); // Add the shape node to the initialShadingGroup
 
 	MGlobal::displayInfo("Wall node created, mesh generated, and assigned to shading group!");
 	return MS::kSuccess;
